@@ -66,7 +66,7 @@ container-shell: catapult_rocky.sif
 	$(call check_path,d,$(TOOLS_DIR))
 	$(call check_path,d,$(HOME_MOUNT))
 	$(if $(WORK_DIR),$(call check_path,d,$(WORK_DIR)))
-	apptainer exec $(APPTAINER_FLAGS) --pwd $(or $(WORK_DIR),$(CURDIR)) --bind $(or $(WORK_DIR),$(CURDIR)) $(BIND_MOUNTS) catapult_rocky.sif $(SHELL_BIN) -c "/usr/local/bin/show-splash.sh && exec $(SHELL_BIN)"
+	apptainer exec $(APPTAINER_FLAGS) --pwd $(or $(WORK_DIR),$(CURDIR)) --bind $(or $(WORK_DIR),$(CURDIR)) $(BIND_MOUNTS) catapult_rocky.sif $(SHELL_BIN)
 .PHONY: container-shell
 
 stop:
