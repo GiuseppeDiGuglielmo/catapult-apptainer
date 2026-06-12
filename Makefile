@@ -1,8 +1,7 @@
 SHELL := /bin/bash
 
 # Configuration variables
-DATA_DIR := /nas
-TOOLS_DIR := /extras2
+TOOLS_DIR := /mnt
 HOME_MOUNT := $(HOME)
 #### COPY THE SIEMENS SCRIPT FROM THE CURRENT DIRECTORY TO ~/bin/siemens.sh (PLEASE ADAPT IT TO YOUR NEEDS)
 SIEMENS_ENV_SCRIPT := $(HOME_MOUNT)/bin/siemens.sh
@@ -19,7 +18,7 @@ CATAPULT_OPTS := $(if $(CATAPULT_CMD),-eval '$(CATAPULT_CMD)') \
 
 # Container variables
 APPTAINER_FLAGS := --contain --no-mount hostfs  # Isolate container, disable auto-mounts
-BIND_MOUNTS := --bind $(TOOLS_DIR):$(TOOLS_DIR) --bind $(DATA_DIR):$(DATA_DIR) --bind $(HOME_MOUNT) --bind /tmp # Explicit mounts only
+BIND_MOUNTS := --bind $(TOOLS_DIR):$(TOOLS_DIR) --bind $(HOME_MOUNT) --bind /tmp # Explicit mounts only
 SHELL_BIN := /bin/bash
 
 # Build variables
@@ -67,7 +66,7 @@ container-shell: catapult_rocky.sif
 	$(call check_path,d,$(TOOLS_DIR))
 	$(call check_path,d,$(HOME_MOUNT))
 	$(if $(WORK_DIR),$(call check_path,d,$(WORK_DIR)))
-	apptainer exec $(APPTAINER_FLAGS) --pwd $(or $(WORK_DIR),$(CURDIR)) $(BIND_MOUNTS) catapult_rocky.sif $(SHELL_BIN) -c "/usr/local/bin/show-splash.sh && exec $(SHELL_BIN)"
+	apptainer exec $(APPTAINER_FLAGS) --pwd $(or $(WORK_DIR),$(CURDIR)) --bind $(or $(WORK_DIR),$(CURDIR)) $(BIND_MOUNTS) catapult_rocky.sif $(SHELL_BIN) -c "/usr/local/bin/show-splash.sh && exec $(SHELL_BIN)"
 .PHONY: container-shell
 
 stop:
