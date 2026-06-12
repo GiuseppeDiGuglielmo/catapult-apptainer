@@ -1,0 +1,108 @@
+Bootstrap: docker
+From: rockylinux/rockylinux:8.10
+Stage: build
+
+%labels
+   Author Giuseppe Di Guglielmo
+   Version v0.0.1
+
+%help
+   Catapult Ultra apptainer environment for Rocky Linux 8.10.
+
+%environment
+    export SLURM_INTERACTIVE_STATUS=Catapult_Rocky
+    export PS1='\[\033[01;32m\]\u\[\033[00m\]@\[\033[01;33m\]\h-dev\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+
+%post
+    dnf update -y
+    dnf install -y epel-release
+    dnf config-manager --set-enabled powertools
+    dnf install -y \
+        autoconf \
+        automake \
+        cmake \
+        curl \
+        findutils \
+        fish \
+        evince \
+        gcc \
+        gcc-c++ \
+        git \
+        glibc.i686 \
+        glibc-devel.i686 \
+        graphviz \
+        hdf5-devel \
+        java-11-openjdk \
+        libX11.i686 \
+        libXau.i686 \
+        libXext \
+        libXext.i686 \
+        libXft \
+        libXft.i686 \
+        libXi.i686 \
+        libXrender.i686 \
+        libXtst \
+        libXtst.i686 \
+        libgcc.i686 \
+        libxcb.i686 \
+        Lmod \
+        ncurses-compat-libs \
+        ncurses-devel \
+        ncurses-libs \
+        net-tools \
+        opencl-headers \
+        openssl-devel \
+        pkgconfig \
+        python3-devel \
+        python3-pip \
+        python3-zmq \
+        redhat-lsb-core \
+        swig \
+        tmux \
+        vim-enhanced \
+        wget \
+        xdg-utils \
+        xorg-x11-server-Xvfb \
+        zeromq-devel \
+        && dnf clean all
+
+    # Create python symlink
+    alternatives --set python /usr/bin/python3
+
+    # Install czmq from source if not available in repos
+    cd /tmp
+    dnf install -y tar gzip make
+    curl -L https://github.com/zeromq/czmq/releases/download/v4.2.1/czmq-4.2.1.tar.gz -o czmq-4.2.1.tar.gz
+    tar -xzf czmq-4.2.1.tar.gz
+    cd czmq-4.2.1
+    ./configure
+    make && make install
+    ldconfig
+    cd /
+    rm -rf /tmp/czmq-4.2.1*
+
+    # Set up locale
+    dnf install -y glibc-langpack-en glibc-all-langpacks
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+
+    # Create splash screen script
+    cat > /usr/local/bin/show-splash.sh << 'SPLASH_EOF'
+#!/bin/bash
+echo "============================================================"
+echo "  Catapult Rocky Linux Container"
+echo "============================================================"
+echo "  OS:        $(cat /etc/redhat-release)"
+echo "  Hostname:  $(hostname -s)"
+echo "  Kernel:    $(uname -r)"
+echo "  CPU:       $(nproc) cores"
+echo "  Memory:    $(free -h | awk '/^Mem:/ {print $2}') total"
+echo "  Catapult:  ${CATAPULT_VER:-Not set}"
+echo "  Questa:    ${QUESTASIM_VER:-Not set}"
+echo "============================================================"
+echo ""
+SPLASH_EOF
+    chmod +x /usr/local/bin/show-splash.sh
+
+%runscript
+    # None
