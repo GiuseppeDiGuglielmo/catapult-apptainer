@@ -23,6 +23,7 @@ Stage: build
         cmake \
         curl \
         findutils \
+        firefox \
         fish \
         evince \
         gcc \
@@ -44,14 +45,18 @@ Stage: build
         libXtst \
         libXtst.i686 \
         libgcc.i686 \
+        libstdc++-devel.i686 \
+        libstdc++.i686 \
         libxcb.i686 \
         Lmod \
+        make \
         ncurses-compat-libs \
         ncurses-devel \
         ncurses-libs \
         net-tools \
         opencl-headers \
         openssl-devel \
+        perl \
         pkgconfig \
         python3-devel \
         python3-pip \

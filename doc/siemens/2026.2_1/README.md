@@ -121,13 +121,18 @@ Language standards: C++11 default (most C++14/C++17 synthesizable constructs
 supported), VHDL 1076-1993, Verilog 1364-2001, SystemVerilog 1800-2017,
 UVMf 2023.4_2.
 
-## Known gaps in the current image
+## Documentation-driven additions to the image
 
-- `libstdc++.i686` and `libstdc++-devel.i686` are missing from
-  `containers/apptainer_catapult_rocky.def`. C++ designs compiled in the
+The following were added to `containers/apptainer_catapult_rocky.def` because
+the documentation calls for them (all resolve from baseos/appstream on Rocky
+8.10):
+
+- `libstdc++.i686`, `libstdc++-devel.i686` — C++ designs compiled in the
   default 32-bit mode need them at link time.
-- No web browser is installed, so the HTML help system will fail after
-  `xdg-open` finds no handler. Either install `firefox` or point the
-  Web Browser option at a host browser.
-- `perl` is only present transitively (as a dependency of `git`/`autoconf`);
-  add it explicitly if the C Design Checker flow is used.
+- `firefox` — the help system falls back to Firefox when `xdg-open` finds no
+  handler; without a browser the in-tree HTML help cannot open.
+- `perl` — previously present only transitively, via `git`/`autoconf`; the
+  C Design Checker performs a Perl version check.
+- `make` — previously installed only as part of the czmq source build; it is
+  a documented requirement of the SCVerify flow, so it is now listed
+  explicitly.
