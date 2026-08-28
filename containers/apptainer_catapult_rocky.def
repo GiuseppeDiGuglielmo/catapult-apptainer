@@ -82,7 +82,7 @@ Stage: build
     rm -rf /tmp/czmq-4.2.1*
 
     # Set up locale
-    dnf install -y glibc-langpack-en glibc-all-langpacks
+    dnf install -y glibc-langpack-en
     export LANG=en_US.UTF-8
     export LC_ALL=en_US.UTF-8
 
