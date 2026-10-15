@@ -146,3 +146,35 @@ UVMf 2023.4_2.
 
 None. The definition file inherited from 2026.2_1 and 2026.3 already covers
 every OS-level requirement the 2026.3_1 documentation states.
+
+No rebuild is needed if `catapult_rocky.sif` was built from the 2026.2_1
+definition (commit "Add documented Catapult dependencies to image") or later.
+
+## Host updates for this release
+
+Everything below lives outside the image, under `TOOLS_DIR` or in
+`~/bin/siemens.sh`. Coming from 2026.2_1, first apply the host updates in
+`doc/siemens/2026.3/README.md` (QuestaSim and Visualizer 2025.3, Design
+Compiler X-2025.06, Vivado 2025.2); the third-party versions did not change
+again in 2026.3_1.
+
+Required:
+
+1. Install Catapult 2026.3_1 from SupportCenter into
+   `$TOOLS_DIR/.../catapult/2026.3_1`.
+2. In `~/bin/siemens.sh`, set `CATAPULT_VER=2026.3_1`.
+3. Make sure `TOOLS_DIR` in the `Makefile` points at the host directory that
+   holds the Siemens tools (the default is `/mnt`).
+
+Recommended:
+
+4. Run saltd 11.19.8.4 or later on the license server, from Siemens License
+   Server v5.3.0 (11.19.0.1 is the minimum). Check with
+   `$MGC_HOME/bin/lmstat -c <port>@<host>`.
+
+After installing:
+
+5. Look in `$MGC_HOME/pkgs/` for the bundled FlexNet directory
+   (`FlexNet-11-19-5` or `FlexNet-11-19-8`; the manuals disagree). It matters
+   only if the `DAEMON` line of your license file points at the saltd inside
+   the Catapult tree.
