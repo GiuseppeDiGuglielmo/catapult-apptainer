@@ -7,13 +7,13 @@
 
 # ----------
 
-export CATAPULT_VER=2026.2
+export CATAPULT_VER=2026.3
 
 # Root path where Catapult releases are installed
 export CATAPULT_PATH=/mnt/local/gdg/tools/cad/siemens/catapult/${CATAPULT_VER}
 
 # Uncomment and set if using Questa for RTL simulation
-#export QUESTASIM_VER=2025.2_2
+#export QUESTASIM_VER=2025.3
 #export MODELTECH=/path/to/questa/${QUESTASIM_VER}/questasim/bin
 
 # ----------
