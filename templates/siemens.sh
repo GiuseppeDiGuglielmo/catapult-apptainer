@@ -7,7 +7,7 @@
 
 # ----------
 
-export CATAPULT_VER=2026.3
+export CATAPULT_VER=2026.3_1
 
 # Root path where Catapult releases are installed
 export CATAPULT_PATH=/mnt/local/gdg/tools/cad/siemens/catapult/${CATAPULT_VER}
