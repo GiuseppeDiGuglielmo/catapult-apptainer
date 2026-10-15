@@ -153,3 +153,39 @@ None. The 2026.2_1 definition file already covers every OS-level requirement
 the 2026.3 documentation states, including the documentation-driven additions
 made for 2026.2_1 (`libstdc++.i686`, `libstdc++-devel.i686`, `firefox`, `perl`,
 `make`).
+
+No rebuild is needed if `catapult_rocky.sif` was built from the 2026.2_1
+definition (commit "Add documented Catapult dependencies to image") or later.
+
+## Host updates for this release
+
+Everything below lives outside the image, under `TOOLS_DIR` or in
+`~/bin/siemens.sh`.
+
+Required:
+
+1. Install Catapult 2026.3 from SupportCenter into
+   `$TOOLS_DIR/.../catapult/2026.3`.
+2. In `~/bin/siemens.sh`, set `CATAPULT_VER=2026.3`.
+3. Make sure `TOOLS_DIR` in the `Makefile` points at the host directory that
+   holds the Siemens tools (the default is `/mnt`).
+
+If you use the simulation or Catapult Ultra flows:
+
+4. Install QuestaSim 2025.3, then set `QUESTASIM_VER=2025.3` and `MODELTECH`
+   in `~/bin/siemens.sh`.
+5. Install Visualizer 2025.3; Catapult Ultra needs it to read QWAVE files in
+   the power flow.
+
+Recommended:
+
+6. Run saltd 11.19.8.4 or later on the license server (11.19.0.1 is the
+   minimum). Check with `$MGC_HOME/bin/lmstat -c <port>@<host>`.
+
+Only if you use these tools, whose qualified versions changed:
+
+7. Design Compiler X-2025.06 (was 2022.03-SP3).
+8. Vivado 2025.2 (was 2023.2).
+
+VCS-MX, Verdi, Synplify Pro, SpyGlass, Quartus, Radiant, Xcelium, and MATLAB
+are unchanged.
