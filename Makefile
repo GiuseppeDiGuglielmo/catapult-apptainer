@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 # Configuration variables
-TOOLS_DIR := /mnt
+TOOLS_DIR := /extras2
 HOME_MOUNT := $(HOME)
 #### COPY THE SIEMENS SCRIPT FROM THE CURRENT DIRECTORY TO ~/bin/siemens.sh (PLEASE ADAPT IT TO YOUR NEEDS)
 SIEMENS_ENV_SCRIPT := $(HOME_MOUNT)/bin/siemens.sh

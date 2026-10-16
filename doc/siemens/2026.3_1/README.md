@@ -221,7 +221,7 @@ Required:
    `$TOOLS_DIR/.../catapult/2026.3_1`.
 2. In `~/bin/siemens.sh`, set `CATAPULT_VER=2026.3_1`.
 3. Make sure `TOOLS_DIR` in the `Makefile` points at the host directory that
-   holds the Siemens tools (the default is `/mnt`).
+   holds the Siemens tools (the default is `/extras2`).
 
 Flow-dependent:
 
