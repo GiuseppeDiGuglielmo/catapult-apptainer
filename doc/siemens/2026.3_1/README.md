@@ -30,6 +30,12 @@ CAT-47598, CAT-46916) and no directive, pragma, option, or command changes.
   moves from v5.2 to **v5.3.0** (still saltd 11.19.8.4 or later), and the
   installation manual now agrees with the release notes on the saltd version.
 - `templates/siemens.sh` now defaults to `CATAPULT_VER=2026.3_1`.
+- **`create_catapult_py_venv.sh` is broken in this release**: it calls a
+  Python interpreter the release does not ship. See "HLS4ML Python virtual
+  environment" below for the workaround.
+- **The HLS4ML venv location now comes from `$HLS4ML_VENV`**, falling back
+  to `$HOME/ccs_venv` (release notes, Option Changes).
+  `templates/siemens.sh` suggests a per-release venv.
 
 For the changes from 2026.2_1 to 2026.3 (Questa 2025.3, Design Compiler
 X-2025.06, Vivado 2025.2, ...), see `doc/siemens/2026.3/README.md`.
@@ -116,6 +122,57 @@ All of these are already in the definition file. The remaining packages
 **not** required by the Catapult documentation — they support our own project
 flows.
 
+## HLS4ML Python virtual environment
+
+The HLS4ML flow runs in a Python virtual environment. The release notes
+(Option Changes) say the default of "Location of Python Virtual Environment
+(HLS4ML flow)" changed from `$HOME/ccs_venv` to `$HLS4ML_VENV`. If the option
+is unchanged and `$HLS4ML_VENV` is unset, Catapult still uses
+`$HOME/ccs_venv`, so an older venv there is picked up silently.
+
+The venv is built from the Python 3.10 shipped with Catapult, not from the
+image's `python3`, by `$MGC_HOME/bin/create_catapult_py_venv.sh <venv-dir>`.
+In 2026.3_1 that script fails at its first step with
+`pkgs/cds_python3/bin/python3: No such file or directory`, and every later
+step then fails too. Compared with 2026.3, the interpreter path changed to
+one the release does not ship (`pkgs/cds_python3/` holds only `include/` and
+`share/`):
+
+```diff
+--- 2026.3/Mgc_home/bin/create_catapult_py_venv.sh
++++ 2026.3_1/Mgc_home/bin/create_catapult_py_venv.sh
+-$CATAPULT_HOME/bin/python3 -m venv --without-pip $VENV
++$CATAPULT_HOME/pkgs/cds_python3/bin/python3 -m venv $VENV
+```
+
+The interpreter is still at `$MGC_HOME/bin/python3` (3.10.19), as in 2026.3.
+Until Siemens fixes the script, run its steps with that path, after sourcing
+`~/bin/siemens.sh` (add the script's `--trusted-host` options to `pip` if
+your site intercepts TLS):
+
+```bash
+VENV=$HOME/catapult_venvs/2026.3_1
+export PYTHONPATH=
+$MGC_HOME/bin/python3 -m venv $VENV
+source $VENV/bin/activate
+pip install --upgrade pip
+pip install --no-cache-dir -r $MGC_HOME/shared/pkgs/ccs_hls4ml/requirements.txt
+PYTHONPATH=$MGC_HOME/shared/pkgs/ccs_hls4ml/hls4ml python3 -c "import hls4ml; import pdfplumber"
+```
+
+Notes:
+
+- The requirements pull TensorFlow 2.15, PyTorch 2.5.1 with the CUDA 12
+  wheels, QKeras, ONNX and Jupyter; the venv takes about 8 GB.
+- The bundled hls4ml reports its version as `1.0.0.Catapult+CCS_2025.1`.
+- `hls4ml` itself is not installed into the venv; it is imported from
+  `$MGC_HOME/shared/pkgs/ccs_hls4ml/hls4ml` through `PYTHONPATH`, which
+  `activate` does not set.
+- The venv records the absolute path of the interpreter it was built from,
+  so Catapult must be mounted at the same path inside the container as when
+  the venv was built. The Makefile binds `TOOLS_DIR` and `$HOME` at their
+  host paths, which satisfies this.
+
 ## Third-party software compatibility (2026.3_1)
 
 External tools live on the host under `TOOLS_DIR` (bind-mounted); the versions
@@ -166,15 +223,22 @@ Required:
 3. Make sure `TOOLS_DIR` in the `Makefile` points at the host directory that
    holds the Siemens tools (the default is `/mnt`).
 
+Flow-dependent:
+
+4. HLS4ML flow: build a venv for this release as described in "HLS4ML
+   Python virtual environment" (the shipped script does not work), and set
+   `HLS4ML_VENV` to it in `~/bin/siemens.sh`. Without it, Catapult falls
+   back to `$HOME/ccs_venv`, which may hold a venv from an older release.
+
 Recommended:
 
-4. Run saltd 11.19.8.4 or later on the license server, from Siemens License
+5. Run saltd 11.19.8.4 or later on the license server, from Siemens License
    Server v5.3.0 (11.19.0.1 is the minimum). Check with
    `$MGC_HOME/bin/lmstat -c <port>@<host>`.
 
 After installing:
 
-5. Look in `$MGC_HOME/pkgs/` for the bundled FlexNet directory
+6. Look in `$MGC_HOME/pkgs/` for the bundled FlexNet directory
    (`FlexNet-11-19-5` or `FlexNet-11-19-8`; the manuals disagree). It matters
    only if the `DAEMON` line of your license file points at the saltd inside
    the Catapult tree.

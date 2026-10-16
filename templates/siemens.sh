@@ -16,6 +16,10 @@ export CATAPULT_PATH=/mnt/local/gdg/tools/cad/siemens/catapult/${CATAPULT_VER}
 #export QUESTASIM_VER=2025.3
 #export MODELTECH=/path/to/questa/${QUESTASIM_VER}/questasim/bin
 
+# Uncomment if using the HLS4ML flow: Python venv built for this release
+# (without it Catapult falls back to $HOME/ccs_venv)
+#export HLS4ML_VENV=${HOME}/catapult_venvs/${CATAPULT_VER}
+
 # ----------
 
 export MGC_HOME=${CATAPULT_PATH}/Mgc_home
